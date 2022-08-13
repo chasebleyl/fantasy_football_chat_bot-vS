@@ -1,0 +1,8 @@
+# Because UTC times are 4 hours offset with ET times, moving times to one minute before the hour
+# This prevents us from needing to program two crons for one schedule, as Midnight falls on the 
+# next day for some of these schedules
+sundayScore:
+    schedule: cron(59 59 19,23 ? * SUN *) # SUNDAY at 4PM and 8PM ET, or 8PM and Midnight UTC
+    
+    function: get_scoreboard_short
+
