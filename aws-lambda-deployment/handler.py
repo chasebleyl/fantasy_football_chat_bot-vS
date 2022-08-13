@@ -1024,6 +1024,14 @@ def bot_main(function):
 # Which functions gets triggered and when, removing the dependency on all scheduling logic in this
 # app
 def run(event, context):
-    current_time = datetime.datetime.now().time()
     name = context.function_name
-    logger.info("Your cron function " + name + " ran at " + str(current_time))
+    start_time = datetime.datetime.now().time()
+    logger.info("Fantasy Football bot CRON " + name + " ran at " + str(start_time))
+    function = "UNDEFINED"
+    try:
+        function = os.environ["FUNCTION"]
+    except KeyError:
+        function = "init"
+    bot_main(function)
+    finished_time = datetime.datetime.now().time()
+    logger.info("Fantasy Football bot CRON " + name + " finished running at " + str(finished_time) + " for a total duration of " + str(finished_time - start_time))
