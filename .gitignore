@@ -137,4 +137,5 @@ dmypy.json
 ff_bot/ids.txt
 
 # Serverless
-*.serverless
+aws-lambda-deployment/.serverless
+aws-lambda-deployment/config.yaml
