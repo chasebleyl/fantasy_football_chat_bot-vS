@@ -1,16 +1,14 @@
-import datetime
 import logging
-
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-
 import requests
 import json
 import os
 import random
-from datetime import datetime
+from datetime import datetime, date
 from apscheduler.schedulers.blocking import BlockingScheduler
 from espn_api.football import League
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 class DiscordException(Exception):
     pass
@@ -1024,14 +1022,17 @@ def bot_main(function):
 # Which functions gets triggered and when, removing the dependency on all scheduling logic in this
 # app
 def run(event, context):
+    # TODO: Bot should check begin/end and discern whether it should run or not
     name = context.function_name
-    start_time = datetime.datetime.now().time()
-    logger.info("Fantasy Football bot CRON " + name + " ran at " + str(start_time))
+    start_time = datetime.now().time()
+    logger.info("CRON Lambda " + name + " began at " + str(start_time))
     function = "UNDEFINED"
     try:
         function = os.environ["FUNCTION"]
     except KeyError:
         function = "init"
     bot_main(function)
-    finished_time = datetime.datetime.now().time()
-    logger.info("Fantasy Football bot CRON " + name + " finished running at " + str(finished_time) + " for a total duration of " + str(finished_time - start_time))
+    finished_time = datetime.now().time()
+    time_difference = datetime.combine(date.today(), finished_time) - datetime.combine(date.today(), start_time)
+    logger.info("CRON Lambda " + name + " finished at " + str(finished_time))
+    logger.info("Total duration " + str(time_difference))

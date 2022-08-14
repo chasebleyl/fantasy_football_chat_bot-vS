@@ -12,55 +12,59 @@ environment:
 #   users: REPLACE
 #   emotes: REPLACE
 
+pythonRequirements:
+  dockerizePip: true
+
 # AWS CRON triggers are in UTC timezone only.
 # UTC offsets Eastern Timezone (ET) by:
 #   - 4 hours for EDT (spring & summer)
 #   - 5 hours for EST (fall & winter)
-
+# AWS Schedule Expressions (CRONs) are a little weird: https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html
+#   cron(1 2 3 4 5 6) for cron(MINUTES HOURS DAY-OF-MONTH MONTH DAY-OF-WEEK YEAR)
 # DELAY-AGNOSTIC
 sundayScore:
   function: get_scoreboard_short
   events:
-  - schedule: cron(0 0 20 ? * SUN *) # SUNDAY at 400PM EDT, or 2000 UTC
-  - schedule: cron(0 0 0 ? * MON *) # SUNDAY at 800PM EDT, or MONDAY at 0000AM UTC
+  - schedule: cron(0 20 ? * SUN *) # SUNDAY at 400PM EDT, or 2000 UTC
+  - schedule: cron(0 0 ? * MON *) # SUNDAY at 800PM EDT, or MONDAY at 0000AM UTC
 headsUpReport:
   function: get_heads_up
   events:
-  - schedule: cron(0 30 20 ? * WED *) # WEDNESDAY at 430PM EDT, or 2030 UTC
+  - schedule: cron(30 20 ? * WED *) # WEDNESDAY at 430PM EDT, or 2030 UTC
 matchups:
   function: get_matchups
   events:
-  - schedule: cron(0 30 22 ? * WED *) # THURSDAY at 630PM EDT, or 2230 UTC
+  - schedule: cron(30 22 ? * WED *) # THURSDAY at 630PM EDT, or 2230 UTC
 inactives:
   function: get_inactives
   events:
-  - schedule: cron(0 0 0 ? * SUN *) # SATURDAY at 800PM EDT, or SUNDAY at 0000AM UTC
+  - schedule: cron(0 0 ? * SUN *) # SATURDAY at 800PM EDT, or SUNDAY at 0000AM UTC
 
 # NOT DELAYED
 fridayAndMondayScore:
   function: get_scoreboard_short
   events:
-  - schedule: cron(0 30 11 ? * FRI,MON *) # FRIDAY & MONDAY at 730AM EDT, or 1130 UTC
+  - schedule: cron(30 11 ? * FRI,MON *) # FRIDAY & MONDAY at 730AM EDT, or 1130 UTC
 closeScores:
   function: get_close_scores
   events:
-  - schedule: cron(0 30 22 ? * SUN,MON *) # SUNDAY & MONDAY at 630PM EDT, or 2230 UTC
+  - schedule: cron(30 22 ? * SUN,MON *) # SUNDAY & MONDAY at 630PM EDT, or 2230 UTC
 finalScores:
   function: get_final
   events:
-  - schedule: cron(0 30 11 ? * TUES *) # TUESDAY at 730AM EDT, or 1130 UTC
+  - schedule: cron(30 11 ? * TUES *) # TUESDAY at 730AM EDT, or 1130 UTC
 standings:
   function: get_standings
   events:
-  - schedule: cron(0 30 22 ? * TUES *) # TUESDAY at 630PM EDT, or 2230 UTC
+  - schedule: cron(30 22 ? * TUES *) # TUESDAY at 630PM EDT, or 2230 UTC
 powerRankings:
   function: get_power_rankings
   events:
-  - schedule: cron(0 30 22 ? * TUES *) # TUESDAY at 630PM EDT, or 2230 UTC
+  - schedule: cron(30 22 ? * TUES *) # TUESDAY at 630PM EDT, or 2230 UTC
 waiver:
   function: get_waiver_report
   events:
-  - schedule: cron(0 00 12 ? * WED *) # WEDNESDAY at 800AM EDT, or 1200 UTC
+  - schedule: cron(0 12 ? * WED *) # WEDNESDAY at 800AM EDT, or 1200 UTC
 
 # # DELAYED
 # # Uncomment the following configs (and comment out the NOT DELAYED configs) in case
@@ -69,24 +73,24 @@ waiver:
 # fridayAndMondayScore:
 #   function: get_scoreboard_short
 #   events:
-#   - schedule: cron(0 30 11 ? * FRI,MON,TUES *) # FRIDAY, MONDAY, & TUESDAY at 730AM EDT, or 1130 UTC
+#   - schedule: cron(30 11 ? * FRI,MON,TUES *) # FRIDAY, MONDAY, & TUESDAY at 730AM EDT, or 1130 UTC
 # closeScores:
 #   function: get_close_scores
 #   events:
-#   - schedule: cron(0 30 22 ? * SUN,MON,TUES *) # SUNDAY, MONDAY, & TUESDAY at 630PM EDT, or 2230 UTC
+#   - schedule: cron(30 22 ? * SUN,MON,TUES *) # SUNDAY, MONDAY, & TUESDAY at 630PM EDT, or 2230 UTC
 # finalScores:
 #   function: get_final
 #   events:
-#   - schedule: cron(0 30 11 ? * WED *) # WEDNESDAY at 730AM EDT, or 1130 UTC
+#   - schedule: cron(30 11 ? * WED *) # WEDNESDAY at 730AM EDT, or 1130 UTC
 # standings:
 #   function: get_standings
 #   events:
-#   - schedule: cron(0 30 22 ? * WED *) # WEDNESDAY at 630PM EDT, or 2230 UTC
+#   - schedule: cron(30 22 ? * WED *) # WEDNESDAY at 630PM EDT, or 2230 UTC
 # powerRankings:
 #   function: get_power_rankings
 #   events:
-#   - schedule: cron(0 30 22 ? * WED *) # WEDNESDAY at 630PM EDT, or 2230 UTC
+#   - schedule: cron(30 22 ? * WED *) # WEDNESDAY at 630PM EDT, or 2230 UTC
 # waiver:
 #   function: get_waiver_report
 #   events:
-#   - schedule: cron(0 00 12 ? * THURS *) # THURSDAY at 800AM EDT, or 1200 UTC
+#   - schedule: cron(0 12 ? * THURS *) # THURSDAY at 800AM EDT, or 1200 UTC

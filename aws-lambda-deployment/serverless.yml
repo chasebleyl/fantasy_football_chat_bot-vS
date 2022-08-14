@@ -142,3 +142,5 @@ functions:
 #         sched.add_job(bot_main, 'cron', ['get_waiver_report'], id='waiver_report',
 #             day_of_week='thu', hour=8, start_date=ff_start_date, end_date=ff_end_date,
 #             timezone=my_timezone, replace_existing=True)
+plugins:
+  - serverless-python-requirements
