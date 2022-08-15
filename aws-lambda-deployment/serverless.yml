@@ -1,21 +1,25 @@
 service: fantasy-football-discord-bot
 frameworkVersion: '3'
 custom: ${file(./config.yaml)}
+plugins:
+  - serverless-python-requirements
 provider:
   name: aws
   runtime: python3.8
   environment:
     DISCORD_WEBHOOK_URL: ${self:custom.environment.discordWebhookUrl}
+    END_DATE: ${self:custom.environment.endDate}
     ESPN_S2: ${self:custom.environment.espnS2}
     EXTRA_TROPHIES: ${self:custom.environment.extraTrophies}
     LEAGUE_ID: ${self:custom.environment.leagueId}
     LEAGUE_YEAR: ${self:custom.environment.leagueYear}
     RANDOM_PHRASE: ${self:custom.environment.randomPhrase}
+    START_DATE: ${self:custom.environment.startDate}
     SWID: ${self:custom.environment.swid}
     TEST: ${self:custom.environment.test}
     TOP_HALF_SCORING: ${self:custom.environment.topHalfScoring}
     # FAAB: ${self:custom.environment.faab}
-    # users: ${self:custom.environment.users}
+    # USERS: ${self:custom.environment.users}
     # EMOTES: ${self:custom.environment.emotes}
 
 functions:
@@ -72,75 +76,3 @@ functions:
       FUNCTION: ${self:custom.waiver.function}
     events: ${self:custom.waiver.events}
 
-
-#     #regular schedule:
-#     CONFIGURED #game day score update:              sunday at 4pm, 8pm east coast time.
-#     sched.add_job(bot_main, 'cron', ['get_scoreboard_short'], id='scoreboard2',
-#         day_of_week='sun', hour='16,20', start_date=ff_start_date, end_date=ff_end_date,
-#         timezone=game_timezone, replace_existing=True)
-#     CONFIGURED #heads up report:                    wednesday afternoon at 4:30pm local time.
-#     sched.add_job(bot_main, 'cron', ['get_heads_up'], id='headsup',
-#         day_of_week='wed', hour=16, minute=30, start_date=ff_start_date, end_date=ff_end_date,
-#         timezone=my_timezone, replace_existing=True)
-#     CONFIGURED #matchups:                           thursday evening at 6:30pm east coast time.
-#     sched.add_job(bot_main, 'cron', ['get_matchups'], id='matchups',
-#         day_of_week='thu', hour=18, minute=30, start_date=ff_start_date, end_date=ff_end_date,
-#         timezone=game_timezone, replace_existing=True)
-#     CONFIGURED #inactives:                          saturday evening at 8pm east coast time.
-#     sched.add_job(bot_main, 'cron', ['get_inactives'], id='inactives',
-#         day_of_week='sat', hour=20, start_date=ff_start_date, end_date=ff_end_date,
-#         timezone=game_timezone, replace_existing=True)
-#     #schedule without a COVID delay:
-#     if tues_sched == False:
-#         ready_text = "Ready! Regular schedule set."
-#     CONFIGURED #score update:                       friday and monday morning at 7:30am local time.
-#         sched.add_job(bot_main, 'cron', ['get_scoreboard_short'], id='scoreboard1',
-#             day_of_week='fri,mon', hour=7, minute=30, start_date=ff_start_date, end_date=ff_end_date,
-#             timezone=my_timezone, replace_existing=True)
-#     CONFIGURED #close scores (within 15.99 points): sunday and monday evening at 6:30pm east coast time.
-#         sched.add_job(bot_main, 'cron', ['get_close_scores'], id='close_scores',
-#             day_of_week='sun,mon', hour=18, minute=30, start_date=ff_start_date, end_date=ff_end_date,
-#             timezone=game_timezone, replace_existing=True)
-#     CONFIGURED #final scores and trophies:          tuesday morning at 7:30am local time.
-#         sched.add_job(bot_main, 'cron', ['get_final'], id='final',
-#             day_of_week='tue', hour=7, minute=30, start_date=ff_start_date, end_date=ff_end_date,
-#             timezone=my_timezone, replace_existing=True)
-#     CONFIGURED #standings, PR, PO%, SR:             tuesday evening at 6:30pm local time.
-#         sched.add_job(bot_main, 'cron', ['get_standings'], id='standings',
-#             day_of_week='tue', hour=18, minute=30, start_date=ff_start_date, end_date=ff_end_date,
-#             timezone=my_timezone, replace_existing=True)
-#         sched.add_job(bot_main, 'cron', ['get_power_rankings'], id='power_rankings',
-#             day_of_week='tue', hour=18, minute=30, second=5, start_date=ff_start_date, end_date=ff_end_date,
-#             timezone=my_timezone, replace_existing=True)
-#     CONFIGURED #waiver report:                      wednesday morning at 8am local time.
-#         sched.add_job(bot_main, 'cron', ['get_waiver_report'], id='waiver_report',
-#             day_of_week='wed', hour=8, start_date=ff_start_date, end_date=ff_end_date,
-#             timezone=my_timezone, replace_existing=True)
-#     #schedule with a COVID delay to tuesday:
-#     else:
-#         ready_text = "Ready! Tuesday schedule set."
-#     CONFIGURED #extra score update:                 tuesday morning at 7:30am local time.
-#         sched.add_job(bot_main, 'cron', ['get_scoreboard_short'], id='scoreboard1',
-#             day_of_week='fri,mon,tue', hour=7, minute=30, start_date=ff_start_date, end_date=ff_end_date,
-#             timezone=my_timezone, replace_existing=True)
-#     CONFIGURED #close scores (within 15.99 points): sunday, monday, and tuesday evening at 6:30pm east coast time.
-#         sched.add_job(bot_main, 'cron', ['get_close_scores'], id='close_scores',
-#             day_of_week='sun,mon,tue', hour=18, minute=30, start_date=ff_start_date, end_date=ff_end_date,
-#             timezone=game_timezone, replace_existing=True)
-#     CONFIGURED #final scores and trophies:          wednesday morning at 7:30am local time.
-#         sched.add_job(bot_main, 'cron', ['get_final'], id='final',
-#             day_of_week='wed', hour=7, minute=30, start_date=ff_start_date, end_date=ff_end_date,
-#             timezone=my_timezone, replace_existing=True)
-#     CONFIGURED #standings, PR, PO%, SR:             wednesday evening at 6:30pm local time.
-#         sched.add_job(bot_main, 'cron', ['get_standings'], id='standings',
-#             day_of_week='wed', hour=18, minute=30, start_date=ff_start_date, end_date=ff_end_date,
-#             timezone=my_timezone, replace_existing=True)
-#         sched.add_job(bot_main, 'cron', ['get_power_rankings'], id='power_rankings',
-#             day_of_week='wed', hour=18, minute=30, second=5, start_date=ff_start_date, end_date=ff_end_date,
-#             timezone=my_timezone, replace_existing=True)
-#     CONFIGURED #waiver report:                      thursday morning at 8am local time.
-#         sched.add_job(bot_main, 'cron', ['get_waiver_report'], id='waiver_report',
-#             day_of_week='thu', hour=8, start_date=ff_start_date, end_date=ff_end_date,
-#             timezone=my_timezone, replace_existing=True)
-plugins:
-  - serverless-python-requirements

@@ -1017,21 +1017,42 @@ def bot_main(function):
 #     print(ready_text)
 #     sched.start()
 
+def str_to_datetime(date_str):
+    date_format = "%Y-%m-%dT%H:%M:%S.%fZ"
+    logger.info("Currently converting date_str=" + date_str + " using date_format=" + date_format)
+    return datetime.strptime(date_str, date_format)
+
+def currently_in_season():
+    current_date = datetime.now()
+    season_start_date = None
+    try:
+        season_start_date = str(os.environ["START_DATE"])
+    except KeyError:
+        pass
+    season_end_date = None
+    try:
+        season_end_date = str(os.environ["END_DATE"])
+    except KeyError:
+        pass
+    return current_date >= str_to_datetime(season_start_date) and current_date <= str_to_datetime(season_end_date)
+
 # Conditionally receive arguments from SLS settings to determine which function needs to be run.
 # Once determined, trigger that function via bot_main(). This should let the SLS config determine
 # Which functions gets triggered and when, removing the dependency on all scheduling logic in this
-# app
+# app. The bot should only run during the NFL season; before and after it should be quieted.
 def run(event, context):
-    # TODO: Bot should check begin/end and discern whether it should run or not
     name = context.function_name
     start_time = datetime.now().time()
     logger.info("CRON Lambda " + name + " began at " + str(start_time))
-    function = "UNDEFINED"
-    try:
-        function = os.environ["FUNCTION"]
-    except KeyError:
-        function = "init"
-    bot_main(function)
+    if currently_in_season():
+        function = "UNDEFINED"
+        try:
+            function = os.environ["FUNCTION"]
+        except KeyError:
+            function = "init"
+        bot_main(function)
+    else:
+        logger.info("Not currently in season, so skipping this run.")
     finished_time = datetime.now().time()
     time_difference = datetime.combine(date.today(), finished_time) - datetime.combine(date.today(), start_time)
     logger.info("CRON Lambda " + name + " finished at " + str(finished_time))
