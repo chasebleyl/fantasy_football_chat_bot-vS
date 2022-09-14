@@ -9,7 +9,7 @@ environment:
   startDate: 2022-09-07
   swid: REPLACE
   test: false
-  topHalfScoring: true
+  topHalfScoring: false
 #   faab: REPLACE
 #   users: REPLACE
 #   emotes: REPLACE
