@@ -11,70 +11,31 @@ authorName: 'Rupak Ganguly'
 authorAvatar: 'https://avatars0.githubusercontent.com/u/8188?v=4&s=140'
 -->
 
-# Serverless Framework Python Scheduled Cron on AWS
+# ESPN Fantasy Football Discord Bot; Serverless Deployment
 
-This template demonstrates how to develop and deploy a simple cron-like service running on AWS Lambda using the traditional Serverless Framework.
-
-## Schedule event type
-
-This examples defines two functions, `rateHandler` and `cronHandler`, both of which are triggered by an event of `schedule` type, which is used for configuring functions to be executed at specific time or in specific intervals. For detailed information about `schedule` event, please refer to corresponding section of Serverless [docs](https://serverless.com/framework/docs/providers/aws/events/schedule/).
-
-When defining `schedule` events, we need to use `rate` or `cron` expression syntax.
-
-### Rate expressions syntax
-
-```pseudo
-rate(value unit)
-```
-
-`value` - A positive number
-
-`unit` - The unit of time. ( minute | minutes | hour | hours | day | days )
-
-In below example, we use `rate` syntax to define `schedule` event that will trigger our `rateHandler` function every minute
-
-```yml
-functions:
-  rateHandler:
-    handler: handler.run
-    events:
-      - schedule: rate(1 minute)
-```
-
-Detailed information about rate expressions is available in official [AWS docs](https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html#RateExpressions).
-
-
-### Cron expressions syntax
-
-```pseudo
-cron(Minutes Hours Day-of-month Month Day-of-week Year)
-```
-
-All fields are required and time zone is UTC only.
-
-| Field         | Values         | Wildcards     |
-| ------------- |:--------------:|:-------------:|
-| Minutes       | 0-59           | , - * /       |
-| Hours         | 0-23           | , - * /       |
-| Day-of-month  | 1-31           | , - * ? / L W |
-| Month         | 1-12 or JAN-DEC| , - * /       |
-| Day-of-week   | 1-7 or SUN-SAT | , - * ? / L # |
-| Year          | 192199      | , - * /       |
-
-In below example, we use `cron` syntax to define `schedule` event that will trigger our `cronHandler` function every second minute every Monday through Friday
-
-```yml
-functions:
-  cronHandler:
-    handler: handler.run
-    events:
-      - schedule: cron(0/2 * ? * MON-FRI *)
-```
-
-Detailed information about cron expressions in available in official [AWS docs](https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html#CronExpressions).
-
+This bot posts messages to Discord on behalf of an ESPN Fantasy Football League. It is deployed to AWS as Lambda functions which are invoked via CRON events, resulting in no cost to operate.
 
 ## Usage
+
+### Setup
+
+This project relies on Serverless to package and deploy, so import the relevant packages via
+
+```
+$ npm install
+```
+
+### Local Testing
+
+Copy `example-config.yaml`, replace relevant values (from the [forked bot's instructions](../README.md)), and set `test=true`. When _any_ function is invoked, all relevant bot functions will be run and printed out to your terminal.
+
+To execute a function, execute via CLI:
+
+```
+$ sls invoke local --function functionName
+```
+
+where `functionName` is a function from `serverless.yaml.functions`, such as `sundayScore`.
 
 ### Deployment
 
@@ -105,20 +66,6 @@ functions:
 ```
 
 There is no additional step required. Your defined schedules becomes active right away after deployment.
-
-### Local invocation
-
-In order to test out your functions locally, you can invoke them with the following command:
-
-```
-serverless invoke local --function rateHandler
-```
-
-After invocation, you should see output similar to:
-
-```bash
-INFO:handler:Your cron function aws-python-scheduled-cron-dev-rateHandler ran at 15:02:43.203145
-```
 
 ### Bundling dependencies
 
