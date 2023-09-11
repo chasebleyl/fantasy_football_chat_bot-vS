@@ -1,3 +1,5 @@
+org: chasebleyl
+app: fantasy-football-discord-bot
 service: fantasy-football-discord-bot
 frameworkVersion: '3'
 custom: ${file(./config.yaml)}
