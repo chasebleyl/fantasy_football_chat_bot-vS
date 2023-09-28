@@ -46,6 +46,11 @@ functions:
     environment:
       FUNCTION: ${self:custom.inactives.function}
     events: ${self:custom.inactives.events}
+  trades:
+    handler: handler.run
+    environment:
+      FUNCTION: ${self:custom.trades.function}
+    events: ${self:custom.trades.events}
   # DELAY-IMPACTED LAMBDAS (controlled by commented configs in config.yaml)
   fridayAndMondayScore:
     handler: handler.run

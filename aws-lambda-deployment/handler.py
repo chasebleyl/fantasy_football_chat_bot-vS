@@ -628,6 +628,63 @@ def get_trophies(league, extra_trophies, week=None):
 
     return '\n'.join(text)
 
+class Trade:
+    def __init__(self, team1='', team2='', team1_players=[], team2_players=[]):
+        self.team1 = team1
+        self.team2 = team2
+        self.team1_players = team1_players
+        self.team2_players = team2_players
+
+    def __str__(self):
+        return '\n%s RECEIVES %s\n%s RECEIVES %s\n' % (self.team1, self.team2_players, self.team2, self.team1_players)
+
+def process_trade_activity(activity):
+    team1 = None
+    team2 = None 
+    team1_players = []
+    team2_players = []
+    for action in activity.actions:
+        team = action[0].team_name
+        player = action[2].name
+        if team1 is None:
+            team1 = team
+            team1_players.append(player)
+        elif team1 == team:
+            team1_players.append(player)
+        elif team2 is None:
+            team2 = team
+            team2_players.append(player)
+        elif team2 == team:
+            team2_players.append(player)
+    return Trade(team1, team2, team1_players, team2_players)
+
+def get_trades(league):
+    try:
+        if os.environ["SWID"] and os.environ["ESPN_S2"]:
+            activities = league.recent_activity(50)
+            report     = []
+
+            for activity in activities:
+                actions = activity.actions
+                delta_in_mins = (datetime.today() - datetime.fromtimestamp(activity.date/1000)).total_seconds() / 60.0
+                if delta_in_mins <= 10:
+                    if (len(actions) == 1 and actions[0][1] == 'TRADED') or (len(actions) > 1 and actions[1][1] == 'TRADED'):
+                        report.append('\nTIME: %s %s' % (d2, process_trade_activity(activity)))
+
+            report.reverse()
+
+            if not report:
+                return ('')
+
+            text = ['__**Trade Alert %s:**__ ' % today] + report + [' ']
+            if random_phrase == True:
+                text += get_random_phrase()
+
+            return '\n'.join(text)
+    except KeyError:
+        return ('')
+    
+
 def test_users(league):
     message = []
     for t in league.teams:
@@ -765,6 +822,7 @@ def str_limit_check(text,limit):
     return split_str
 
 def bot_main(function):
+    print("Beginning bot_main for function " + function)
     str_limit = 4000
 
     try:
@@ -847,19 +905,20 @@ def bot_main(function):
         emotes += [''] * league.teams[-1].team_id
 
     if test:
-        print(get_scoreboard_short(league))
-        print(get_projected_scoreboard(league))
-        print(get_close_scores(league))
-        print(get_standings(league, top_half_scoring))
+        # print(get_scoreboard_short(league))
+        # print(get_projected_scoreboard(league))
+        # print(get_close_scores(league))
+        # print(get_standings(league, top_half_scoring))
         # print(get_power_rankings(league))
         # print(get_sim_record(league))
-        print(combined_power_rankings(league))
-        print(get_waiver_report(league, faab))
-        print(get_matchups(league))
-        print(get_heads_up(league))
-        print(get_inactives(league))
+        # print(combined_power_rankings(league))
+        # print(get_waiver_report(league, faab))
+        # print(get_matchups(league))
+        # print(get_heads_up(league))
+        # print(get_inactives(league))
+        print(get_trades(league))
         # print(season_mvp(league))
-        function="get_final"
+        function="test"
         # print(test_users(league))
         # discord_bot.send_message("Testing")
 
@@ -893,6 +952,8 @@ def bot_main(function):
         week = league.current_week - 1
         text = get_scoreboard_short(league, week=week)
         text = text + "\n\n" + get_trophies(league, extra_trophies, week=week)
+    elif function=="get_trades":
+        text = get_trades(league)
     elif function=="init":
         try:
             text = os.environ["INIT_MSG"]

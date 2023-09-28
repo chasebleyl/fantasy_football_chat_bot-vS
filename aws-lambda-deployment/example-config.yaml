@@ -67,6 +67,10 @@ waiver:
   function: get_waiver_report
   events:
   - schedule: cron(0 12 ? * WED *) # WEDNESDAY at 800AM EDT, or 1200 UTC
+trades:
+  function: get_trades
+  events:
+  - schedule: cron(0/10 * ? * * *) # EVERY 10 MINUTES, EVERY DAY OF WEEK
 
 # # DELAYED
 # # Uncomment the following configs (and comment out the NOT DELAYED configs) in case
